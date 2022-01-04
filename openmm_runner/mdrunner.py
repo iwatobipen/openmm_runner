@@ -91,7 +91,7 @@ def runmd():
     integrator = mm.LangevinIntegrator(
         md_config['integrator_settings']['temperature'] * unit.kelvin, 
         md_config['integrator_settings']['frictionCoeff'] / unit.picoseconds, 
-        md_config['integrator_settings']['frictionCoeffstepSize']  * unit.femtoseconds
+        md_config['integrator_settings']['stepSize']  * unit.femtoseconds
     )
 
     simulation = app.Simulation(modeller.topology, system, integrator)
