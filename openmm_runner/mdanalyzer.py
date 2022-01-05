@@ -7,8 +7,8 @@ from MDAnalysis.analysis.distances import dist
 from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
 
 
-def align_trajectroy(data_path, topologyfile='topology.pdb', trajectroyfile='trajectrory.xtc'):
-    md_universe = mda.Universe(str(data_path / topologyfile), str(data_path / trajectroyfile))
+def align_trajectroy(data_path, topologyfile='topology.pdb', trajectoryfile='trajectory.xtc'):
+    md_universe = mda.Universe(str(data_path / topologyfile), str(data_path / trajectoryfile))
     # Set trajectory pointer to first frame as reference
     md_universe.trajectory[0]
     
