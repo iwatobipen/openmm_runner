@@ -16,6 +16,9 @@ config = {
     'integrator_settings':  {'temperature':300,
                             'frictionCoeff':1.0,
                             'stepSize':2.0},
+    'platform': {'name':'CUDA',
+                 'properties': {'DeviceIndex':'0'}
+                },
     'md_steps' : 1000,
     'write_interval': 1,
     'log_interval': 1

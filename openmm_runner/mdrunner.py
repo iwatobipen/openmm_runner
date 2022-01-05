@@ -52,6 +52,7 @@ def generate_forcefield(
 
 
 def runmd():
+    print('load config')
     config = getParser().parse_args()
     with open(config.configs, 'r') as file:
         md_config = yaml.load(file)
@@ -93,8 +94,13 @@ def runmd():
         md_config['integrator_settings']['frictionCoeff'] / unit.picoseconds, 
         md_config['integrator_settings']['stepSize']  * unit.femtoseconds
     )
-
-    simulation = app.Simulation(modeller.topology, system, integrator)
+    if md_config['platform'] != "":
+        platform = mm.Platform.getPlatformByName(md_config['platform']['name'])
+        properties = md_config['platform']['properties']
+    else:
+        platform = None
+        properties = None
+    simulation = app.Simulation(modeller.topology, system, integrator, platform, properties)
     simulation.context.setPositions(modeller.positions)
     
     print('Run MD')
