@@ -118,7 +118,8 @@ def rdkit_to_openmm(rdkit_mol, name='LIG'):
         OpenMM modeller object holding the molecule of interest.
     """
     # convert rdkit to openff
-    off_mol = Molecule.from_rdkit(rdkit_mol)
+    off_mol = Molecule.from_rdkit(rdkit_mol, 
+                                allow_undefined_stereo=True)
 
     # add name for molecule
     off_mol.name = name
@@ -149,7 +150,7 @@ def rdkit_to_openmm(rdkit_mol, name='LIG'):
     return omm_mol
 
 
-def merge_protein_and_ligand(protein, ligand):
+def merge_protein_and_ligand(protein, ligands):
     """
     Merge two OpenMM objects.
 
@@ -157,7 +158,7 @@ def merge_protein_and_ligand(protein, ligand):
     ----------
     protein: pdbfixer.pdbfixer.PDBFixer
         Protein to merge.
-    ligand: simtk.openmm.app.Modeller
+    ligands: list of simtk.openmm.app.Modeller
         Ligand to merge.
 
     Returns
@@ -168,18 +169,28 @@ def merge_protein_and_ligand(protein, ligand):
         The merged positions.
     """
     # combine topologies
-    md_protein_topology = md.Topology.from_openmm(protein.topology)  # using mdtraj for protein top
-    md_ligand_topology = md.Topology.from_openmm(ligand.topology)  # using mdtraj for ligand top
-    md_complex_topology = md_protein_topology.join(md_ligand_topology)  # add them together
+    md_base_topology = md.Topology.from_openmm(protein.topology)  # using mdtraj for protein top
+    for ligand in ligands:
+        md_ligand_topology = md.Topology.from_openmm(ligand.topology)  # using mdtraj for ligand top
+        md_base_topology = md_base_topology.join(md_ligand_topology)  # add them together
+    md_complex_topology = md_base_topology
     complex_topology = md_complex_topology.to_openmm()
 
     # combine positions
-    total_atoms = len(protein.positions) + len(ligand.positions)
-
+    indexes = []
+    total_atoms = len(protein.positions)
+    indexes.append(total_atoms)
+    for ligand in ligands:
+        indexes.append(len(ligand.positions))
+        total_atoms += len(ligand.positions)
+    print(indexes)
     # create an array for storing all atom positions as tupels containing a value and a unit
     # called OpenMM Quantities
     complex_positions = unit.Quantity(np.zeros([total_atoms, 3]), unit=unit.nanometers)
-    complex_positions[: len(protein.positions)] = protein.positions  # add protein positions
-    complex_positions[len(protein.positions) :] = ligand.positions  # add ligand positions
-
+    complex_positions[: len(protein.positions)] = protein.positions  # add protein position
+    initial = len(protein.positions)
+    for ligand in ligands:
+        #complex_positions[len(protein.positions) :] = ligand.positions  # add ligand positions
+        complex_positions[initial:initial+len(ligand.positions)] = ligand.positions  # add ligand positions
+        initial += len(ligand.positions)
     return complex_topology, complex_positions

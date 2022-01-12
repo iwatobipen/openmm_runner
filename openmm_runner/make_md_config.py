@@ -4,8 +4,7 @@ from collections import OrderedDict
 
 config = {
     'pdb_file':'',
-    'resname':'',
-    'lig_smiles':'',
+    'ligands_info':{'resname':'smiles'},
     'ignore_missing_residues':False,
     'ignore_terminal_missing_residues':False,
     'ph':7.0,
