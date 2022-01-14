@@ -10,7 +10,13 @@ import openmm as mm
 import openmm.app as app
 from openmm import unit
 from openff.toolkit.topology import Molecule, Topology
+from openff.toolkit.utils.toolkits import GLOBAL_TOOLKIT_REGISTRY
+from openff.toolkit.utils import toolkits
+
 from openmmforcefields.generators import GAFFTemplateGenerator
+
+if toolkits.OPENEYE_AVAILABLE:
+    GLOBAL_TOOLKIT_REGISTRY.deregister_toolkit(toolkits.OpenEyeToolkitWrapper)
 
 def prepare_protein(pdb_file, 
     ignore_missing_residues=True, ignore_terminal_missing_residues=True, ph=7.0):
