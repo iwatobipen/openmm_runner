@@ -66,7 +66,8 @@ def runmd():
     prepared_protein = mdutils.prepare_protein(md_config['pdb_file'],
     ignore_missing_residues=md_config['ignore_missing_residues'],
     ignore_terminal_missing_residues=md_config['ignore_terminal_missing_residues'],
-    ph=md_config['ph'])
+    ph=md_config['ph'],
+    metalion=md_config['metal_ion'])
 
     print('Prepare Ligand....')
     ligands_info = md_config['ligands_info']
@@ -91,7 +92,7 @@ def runmd():
     system = forcefield.createSystem(modeller.topology, nonbondedMethod=app.PME)
     
     # this part should be refactaring!!!
-    integrator = mm.LangevinIntegrator(
+    integrator = mm.LangevinMiddleIntegrator(
         md_config['integrator_settings']['temperature'] * unit.kelvin, 
         md_config['integrator_settings']['frictionCoeff'] / unit.picoseconds, 
         md_config['integrator_settings']['stepSize']  * unit.femtoseconds

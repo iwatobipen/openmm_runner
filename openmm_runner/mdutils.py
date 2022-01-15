@@ -13,7 +13,8 @@ from openff.toolkit.topology import Molecule, Topology
 from openmmforcefields.generators import GAFFTemplateGenerator
 
 def prepare_protein(pdb_file, 
-    ignore_missing_residues=True, ignore_terminal_missing_residues=True, ph=7.0):
+    ignore_missing_residues=True, ignore_terminal_missing_residues=True, ph=7.0,
+    metalion=None):
     """
     Use pdbfixer to prepare the protein from a PDB file. Hetero atoms such as ligands are
     removed and non-standard residues replaced. Missing atoms to existing residues are added.
@@ -29,9 +30,12 @@ def prepare_protein(pdb_file,
         If missing residues at the beginning and the end of a chain should be ignored or built.
     ph: float, optional
         pH value used to determine protonation state of residues
+    metalion: pathlib.Path or str
+        metal ion PDB file containig the system to simulate.
 
     Returns
     -------
+    modeller: app.Modeller
     fixer: pdbfixer.pdbfixer.PDBFixer
         Prepared protein system.
     """
@@ -57,7 +61,11 @@ def prepare_protein(pdb_file,
     fixer.findMissingAtoms()
     fixer.addMissingAtoms()
     fixer.addMissingHydrogens(ph)
-    return fixer
+    modeller = app.Modeller(fixer.topology, fixer.positions)
+    if metalion != None:
+        metal = pdbfixer.PDBFixer(str(metalion))
+        modeller.add(metal.topology, metal.positions)
+    return modeller
 
 
 def prepare_ligand(pdb_file, resname, smiles):

@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 config = {
     'pdb_file':'',
+    'metal_ion': None,
     'ligands_info':{'resname':'smiles'},
     'ignore_missing_residues':False,
     'ignore_terminal_missing_residues':False,
@@ -11,7 +12,7 @@ config = {
     'data_path': 'data',
     'protein_ff':"amber14-all.xml",
     'solvent_ff':"amber14/tip3pfb.xml",
-    'integrator' : 'LangevinIntegrator',
+    'integrator' : 'LangevinMiddleIntegrator',
     'integrator_settings':  {'temperature':300,
                             'frictionCoeff':1.0,
                             'stepSize':2.0},
